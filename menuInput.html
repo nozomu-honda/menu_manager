@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang = "ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title><?= title ?></title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <?!= include ('main_css'); ?>
+  </head>
+  <script>
+  function register () {
+      waitingDialog.show('処理中です。お待ちください...', {dialogSize: 'm', progressType: 'success'});
+      var form = document.getElementById("menu_form");
+      console.log(form);
+      console.log(form.date.value);
+      console.log(form.cook_pad_url.value);
+      var submitButton = document.getElementById("submit_button");
+      console.log(submitButton);
+      submitButton.disabled = true;
+      google.script.run.withSuccessHandler(onSuccessRegister).withFailureHandler(onFailureRegister).withUserObject(submitButton).registerFromForm(form);
+      return false;
+  }
+  
+  function onSuccessRegister(ret,btn) {
+      google.script.run.withSuccessHandler(onSuccessOutput).withFailureHandler(onFailureOutput).withUserObject(btn).outputMenuData ();
+  }
+  
+  function onFailureRegister (ret,btn) {
+      waitingDialog.hide();
+      btn.disabled = false;
+      window.alert('DBへの登録に失敗しました；；');
+  }
+  
+  function onSuccessOutput (ret,btn) {
+      waitingDialog.hide();
+      btn.disabled = false;
+  }
+  
+  function onFailureOutput ( ret,btn) {
+      waitingDialog.hide();
+      btn.disabled = false;
+      window.alert('スプレッドシートへの書き込みに失敗しました；；');
+  }
+  </script>
+  <body>
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <div class="navbar-brand"><?= title ?></div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mainpanel">
+    <div class="container">
+    <form class="form-horizontal"id = "menu_form" onsubmit="register(); return false;">
+        <div class="form-group">
+            <label class="control-label col-xs-2"for="date">いつ？</label>
+            <div class="col-xs-5">
+                <input type="date" id="date" name="date" class="form-control" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-xs-2" for="cook_pad_url">クックパッドurl</label>
+            <div class="col-xs-5">
+                <input class="form-control" type="url" id="cook_pad_url" name="cook_pad_url" required/>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-xs-offset-2 col-xs-10">
+                <input type="submit"id="submit_button" class="btn btn-default" value="送信">
+            </div>
+        </div>
+    </form>
+    </div>
+  </div>
+
+    
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+       <script src="https://ajax.aspnetcdn.com/ajax/knockout/knockout-3.1.0.js"></script>
+       
+       <?!= include ('waitingDialog_js'); ?>
+  </body>
+  
+</html>
